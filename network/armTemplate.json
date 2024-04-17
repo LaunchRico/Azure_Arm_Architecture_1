@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"vnetName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the virtual network."
+			}
+		},
+		"vnetAddressPrefix": {
+			"type": "string",
+			"metadata": {
+				"description": "The address prefix for the virtual network."
+			}
+		},
+		"location": {
+			"type": "string",
+			"metadata": {
+				"description": "The location for the virtual network."
+			}
+		},
+		"privateSubnetName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the private subnet."
+			}
+		},
+		"privateSubnetAddressPrefix": {
+			"type": "string",
+			"metadata": {
+				"description": "The address prefix for the private subnet."
+			}
+		}
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Network/virtualNetworks",
+			"apiVersion": "2020-06-01",
+			"name": "[parameters('vnetName')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"[parameters('vnetAddressPrefix')]"
+					]
+				},
+				"subnets": [
+					{
+						"name": "[parameters('privateSubnetName')]",
+						"properties": {
+							"addressPrefix": "[parameters('privateSubnetAddressPrefix')]"
+						}
+					}
+				]
+			}
+		}
+	]
+}
