@@ -11,11 +11,23 @@ privateSubnetName="subnet-mmr-private-sbox-westus-001"
 privateSubnetAddressPrefix="10.3.1.0/24"
 storageAccountName="stmmrsboxwestus001"
 queueName="queuemmrsboxwestus001"
+appServicePlan="plan-mmr-sbox-westus-001"
+webAppName="app-mmr-sbox-westus-001"
+functionStorageAccount="stmmrfnsboxwestus001"
+functionAppName="func-mmr-sbox-westus-001"
+serverFarmSubnetName="subnet-mmr-serverfarm-sbox-westus-001"
+serverFarmSubnetAddressPrefix="10.3.2.0/24"
 
 az group create --name $resourceGroup --location $location --tags owner=$owner
 
 #Execute networkin json file
-#az deployment group create --resource-group $resourceGroup --template-file ./network/armTemplate.json --parameters vnetName=$vnetName vnetAddressPrefix=$vnetAddressPrefix privateSubnetName=$privateSubnetName privateSubnetAddressPrefix=$privateSubnetAddressPrefix location=$location
+az deployment group create --resource-group $resourceGroup --template-file ./network/armTemplate.json --parameters vnetName=$vnetName vnetAddressPrefix=$vnetAddressPrefix privateSubnetName=$privateSubnetName privateSubnetAddressPrefix=$privateSubnetAddressPrefix location=$location serverFarmSubnetName=$serverFarmSubnetName serverFarmSubnetAddressPrefix=$serverFarmSubnetAddressPrefix
 
 #Execute storage json file
-az deployment group create --resource-group $resourceGroup --template-file ./storage/armTemplate.json --parameters location=$location storageAccountName=$storageAccountName queueName=$queueName
+az deployment group create --resource-group $resourceGroup --template-file ./storage/armTemplate.json --parameters location=$location storageAccountName=$storageAccountName queueName=$queueName functionStorageAccount=$functionStorageAccount
+
+#Execute app json file
+az deployment group create --resource-group $resourceGroup --template-file ./app/armTemplate.json --parameters location=$location webAppName=$webAppName appServicePlan=$appServicePlan functionAppName=$functionAppName functionStorageAccount=$storageAccountName vnetName=$vnetName subnetName=$serverFarmSubnetName
+
+#Add Application settings
+az webapp config appsettings set --name $webAppName --resource-group $resourceGroup --settings AzureWebJobsStorage="DefaultEndpointsProtocol=https;AccountName=$storageAccountName;AccountKey=$(az storage account keys list --resource-group $resourceGroup --account-name $storageAccountName --query [0].value -o tsv);EndpointSuffix=core.windows.net"
