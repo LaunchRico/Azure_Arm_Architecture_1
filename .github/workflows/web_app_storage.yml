@@ -1,0 +1,27 @@
+name: CICD for the web app
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build-and-deployment:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v4
+              with:
+                dotnet-version: 8.x
+
+            - name: Build and Publish
+              run: dotnet publish -c Release Api.csproj -o ${{ github.workspace }}/publish
+
+            - name: Deployment to Azure App Service
+              uses: azure/webapps-deployment@v2
+              with:
+                app-name: ${{ env.WEB_APP_NAME }}
+                publish-profile: ${{ secrets.PUBLISH_PROFILE }}
+                package: '${{ github.workspace }}/publish'
