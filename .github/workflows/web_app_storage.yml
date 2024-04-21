@@ -17,7 +17,7 @@ jobs:
                 dotnet-version: 8.x
 
             - name: Build and Publish
-              run: dotnet publish -c Release ${{ github.workspace }}/dev/Api -o ${{ github.workspace }}/publish
+              run: dotnet publish -c Release ${{ github.workspace }}/dev/Api -o ${{ github.workspace }}/publish --verbosity normal
 
             - name: Deployment to Azure App Service
               uses: azure/webapps-deploy@v2
