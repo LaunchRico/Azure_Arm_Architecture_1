@@ -20,7 +20,7 @@ jobs:
               run: dotnet publish -c Release Api.csproj -o ${{ github.workspace }}/publish
 
             - name: Deployment to Azure App Service
-              uses: azure/webapps-deployment@v2
+              uses: azure/webapps-deploy@v2
               with:
                 app-name: ${{ env.WEB_APP_NAME }}
                 publish-profile: ${{ secrets.PUBLISH_PROFILE }}
