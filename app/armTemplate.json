@@ -1,0 +1,121 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"appServicePlan": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the App Service Plan"
+			}
+		},
+		"webAppName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the Web App"
+			}
+		},
+		"functionAppName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the Function App"
+			}
+		},
+		"functionStorageAccount": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the Storage Account for the Function App"
+			}
+		},
+		"vnetName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the Subnet"
+			}
+		},
+		"location": {
+			"type": "string",
+			"metadata": {
+				"description": "The location of the resources"
+			}
+		}
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"apiVersion": "2020-12-01",
+			"name": "[parameters('appServicePlan')]",
+			"location": "[parameters('location')]",
+			"kind": "linux",
+			"properties": {
+				"reserved": true
+			},
+			"sku": {
+				"name": "B1",
+				"tier": "Basic"
+			}
+		},
+		{
+			"type": "Microsoft.Web/sites",
+			"apiVersion": "2020-12-01",
+			"name": "[parameters('webAppName')]",
+			"location": "[parameters('location')]",
+			"kind": "app",
+			"properties": {
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
+			},
+			"resources": [
+				{
+					"name": "virtualNetwork",
+					"type": "config",
+					"apiVersion": "2018-02-01",
+					"location": "[parameters('location')]",
+					"dependsOn": [
+						"[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
+					],
+					"properties": {
+						"subnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+						"swiftSupported": true
+					}
+				}
+			],
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites",
+			"apiVersion": "2020-06-01",
+			"name": "[parameters('functionAppName')]",
+			"location": "[parameters('location')]",
+			"kind": "functionapp",
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
+			],
+			"properties": {
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]",
+				"siteConfig": {
+					"appSettings": [
+						{
+							"name": "FUNCTIONS_WORKER_RUNTIME",
+							"value": "dotnet"
+						},
+						{
+							"name": "AzureWebJobsStorage",
+							"value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('functionStorageAccount'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccount')), '2019-06-01').keys[0].value)]"
+						},
+						{
+							"name": "WEBSITE_RUN_FROM_PACKAGE",
+							"value": "1"
+						}
+					]
+				}
+			}
+		}
+	]
+}
