@@ -69,12 +69,7 @@
 			"properties": {
 				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]",
 				"siteConfig": {
-					"appSettings": [
-						{
-							"name": "WEBSITE_DOTNET_CORE_VERSION",
-							"value": "8.0"
-						}
-					]
+					"linuxFxVersion": "DOTNETCORE|8"
 				}
 			},
 			"resources": [
