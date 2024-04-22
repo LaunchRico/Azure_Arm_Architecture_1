@@ -67,7 +67,15 @@
 			"location": "[parameters('location')]",
 			"kind": "app",
 			"properties": {
-				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]",
+				"siteConfig": {
+					"appSettings": [
+						{
+							"name": "WEBSITE_DOTNET_CORE_VERSION",
+							"value": "8.0"
+						}
+					]
+				}
 			},
 			"resources": [
 				{
