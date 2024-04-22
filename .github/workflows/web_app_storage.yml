@@ -17,11 +17,11 @@ jobs:
                 dotnet-version: 8.x
 
             - name: Build and Publish
-              run: dotnet publish -c Release ${{ github.workspace }}/dev/Api -o ${{ github.workspace }}/publish --verbosity normal
+              run: dotnet publish -c Release ${{ github.workspace }}/dev/api -o ./publish
 
             - name: Deployment to Azure App Service
               uses: azure/webapps-deploy@v2
               with:
                 app-name: ${{ env.WEB_APP_NAME }}
                 publish-profile: ${{ secrets.PUBLISH_PROFILE }}
-                package: '${{ github.workspace }}/publish'
+                package: './publish'
