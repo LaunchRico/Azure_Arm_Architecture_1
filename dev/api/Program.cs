@@ -10,12 +10,15 @@ var configuration = builder.Configuration;
 var app = builder.Build();
 
 app.MapGet("/", (IConfiguration config) => {
+	string queueName = "queuemmrsboxwestus001";
 	string? storageConnectionString = config["AzureWebJobsStorage"];
 	if (storageConnectionString == null) 
 	{
-		return "jeu";
+		return "No connection string";
 	}
-	return storageConnectionString;
+	QueueClient queueClient = new QueueClient(storageConnectionString, queueName);
+	queueClient.SendMessageAsync("First message");
+	return "Message created";
 });
 
 app.Run();
