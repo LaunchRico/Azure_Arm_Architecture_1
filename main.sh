@@ -17,6 +17,10 @@ functionStorageAccount="stmmrfnsboxwestus001"
 functionAppName="func-mmr-sbox-westus-001"
 serverFarmSubnetName="subnet-mmr-serverfarm-sbox-westus-001"
 serverFarmSubnetAddressPrefix="10.3.2.0/24"
+GHSecret="PUBLISH_PROFILE"
+repoOwner="LaunchRico"
+repoName="Azure_Arm_Architecture_1"
+pipelineName="web_app_storage.yml"
 
 az group create --name $resourceGroup --location $location --tags owner=$owner
 
@@ -31,3 +35,10 @@ az deployment group create --resource-group $resourceGroup --template-file ./app
 
 #Add Application settings
 az webapp config appsettings set --name $webAppName --resource-group $resourceGroup --settings AzureWebJobsStorage="DefaultEndpointsProtocol=https;AccountName=$storageAccountName;AccountKey=$(az storage account keys list --resource-group $resourceGroup --account-name $storageAccountName --query [0].value -o tsv);EndpointSuffix=core.windows.net"
+
+#Retriving publish profile
+publishProfile=$(az webapp deployment list-publishing-profiles --name $webAppName --resource-group $resourceGroup --xml)
+echo "$publishProfile" | gh secret set $GHSecret --repo $repoOwner/$repoName
+
+#Run pipeline
+gh workflow run $pipelineName --repo $repoOwner/$repoName
