@@ -43,7 +43,7 @@ publishProfile=$(az webapp deployment list-publishing-profiles --name $webAppNam
 echo "$publishProfile" | gh secret set $GHSecret --repo $repoOwner/$repoName
 
 #Retriving function publish profile
-functionPublishProfile=$(az webapp deployment list-publishing-profiles --name $webAppName --resource-group $resourceGroup --xml)
+functionPublishProfile=$(az webapp deployment list-publishing-profiles --name $functionAppName --resource-group $resourceGroup --xml)
 echo "$functionPublishProfile" | gh secret set $GHFunctionSecret --repo $repoOwner/$repoName
 
 #Run pipeline
