@@ -20,7 +20,7 @@ jobs:
               run: dotnet publish -c Release ${{ github.workspace }}/dev/api -o ${{ github.workspace }}/publish
 
             - name: Testing env variable
-              run: echo 'This is the env value ${{ env.WEB_APP_NAME }}' 
+              run: echo 'This is the env value $WEB_APP_NAME' 
 
             - name: Deployment to Azure App Service
               uses: azure/webapps-deploy@v2
