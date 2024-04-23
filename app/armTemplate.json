@@ -123,7 +123,22 @@
                         }
 					]
 				}
-			}
+			},
+			"resources": [
+				{
+					"name": "virtualNetwork",
+					"type": "config",
+					"apiVersion": "2018-02-01",
+					"location": "[parameters('location')]",
+					"dependsOn": [
+						"[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+					],
+					"properties": {
+						"subnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+						"swiftSupported": true
+					}
+				}
+			]
 		}
 	]
 }
