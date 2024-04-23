@@ -24,6 +24,5 @@ jobs:
               id: fa
               with:
                 app-name: 'func-mmr-sbox-westus-001'
-                slot-name: 'production'
                 publish-profile: ${{ secrets.FUNCTION_PUBLISH_PROFILE }}
                 package: '${{ github.workspace }}/publish'
