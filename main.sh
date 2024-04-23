@@ -18,9 +18,11 @@ functionAppName="func-mmr-sbox-westus-001"
 serverFarmSubnetName="subnet-mmr-serverfarm-sbox-westus-001"
 serverFarmSubnetAddressPrefix="10.3.2.0/24"
 GHSecret="PUBLISH_PROFILE"
+GHFunctionSecret="FUNCTION_PUBLISH_PROFILE"
 repoOwner="LaunchRico"
 repoName="Azure_Arm_Architecture_1"
 pipelineName="web_app_storage.yml"
+functionPipelineName="function_app.yml"
 
 az group create --name $resourceGroup --location $location --tags owner=$owner
 
@@ -40,5 +42,11 @@ az webapp config appsettings set --name $webAppName --resource-group $resourceGr
 publishProfile=$(az webapp deployment list-publishing-profiles --name $webAppName --resource-group $resourceGroup --xml)
 echo "$publishProfile" | gh secret set $GHSecret --repo $repoOwner/$repoName
 
+#Retriving function publish profile
+functionPublishProfile=$(az webapp deployment list-publishing-profiles --name $webAppName --resource-group $resourceGroup --xml)
+echo "$functionPublishProfile" | gh secret set $GHFunctionSecret --repo $repoOwner/$repoName
+
 #Run pipeline
 gh workflow run $pipelineName --repo $repoOwner/$repoName
+
+gh workflow run $functionPipelineName --repo $repoOwner/$repoName
