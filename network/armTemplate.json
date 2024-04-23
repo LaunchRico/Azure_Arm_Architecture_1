@@ -82,6 +82,12 @@
 									"locations": [
 										"[parameters('location')]"
 									]
+								},
+								{
+									"service": "Microsoft.Sql",
+									"locations": [
+										"[parameters('location')]"
+									]
 								}
 							]
 						}

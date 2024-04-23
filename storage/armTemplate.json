@@ -20,10 +20,40 @@
 				"description": "Name of the queue."
 			}
 		},
-		"functionStorageAccount": {
+		"sqlServerName": {
 			"type": "string",
 			"metadata": {
-				"description": "Name of the storage account for the function app."
+				"descripton": "Name of the sql server"
+			}
+		},
+		"adminUsername": {
+			"type": "string",
+			"metadata": {
+				"description": "Sql Server admin username"
+			}
+		},
+		"administratorLoginPassword": {
+			"type": "string",
+			"metadata": {
+				"description": "Sql Server admin password"
+			}
+		},
+		"sqlDatabaseName": {
+			"type": "string",
+			"metadata": {
+				"description": "Sql database name"
+			}
+		},
+		"virtualNetworkName": {
+			"type": "string",
+			"metadata": {
+				"description": "Name of the virtual network"
+			}
+		},
+		"serverFarmSubnetName": {
+			"type": "string",
+			"metadata": {
+				"description": "Name of the subnet with the server farm"
 			}
 		}
 	},
@@ -39,8 +69,18 @@
 			},
 			"kind": "StorageV2",
 			"properties": {
-				"accessTier": "Hot"
-			}
+				"accessTier": "Hot",
+				"networkAcls": {
+					"defaultAction": "Deny",
+					"virtualNetworkRules": [
+						{
+							"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('serverFarmSubnetName'))]",
+							"action": "Allow",
+							"state": "Succeeded"
+						}
+					]
+				}
+            }
 		},
 		{
 			"type": "Microsoft.Storage/storageAccounts/queueServices/queues",
@@ -48,6 +88,42 @@
 			"name": "[concat(parameters('storageAccountName'), '/default/', parameters('queueName'))]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Sql/servers",
+			"apiVersion": "2021-11-01",
+			"name": "[parameters('sqlServerName')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"administratorLogin": "[parameters('adminUsername')]",
+				"administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+				"networkAcls": {
+					"defaultAction": "Deny",
+					"virtualNetworkRules": [
+						{
+							"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('serverFarmSubnetName'))]",
+							"action": "Allow",
+							"state": "Succeeded"
+						}
+					]
+				}
+			},
+			"resources": [
+				{
+					"type": "databases",
+					"apiVersion": "2021-11-01",
+					"name": "[parameters('sqlDatabaseName')]",
+					"location": "[parameters('location')]",
+					"properties": {
+						"edition": "Basic",
+						"collation": "SQL_Latin1_General_CP1_CI_AS",
+						"maxSizeBytes": 2147483648
+					},
+					"dependsOn": [
+						"[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
+					]
+				}
 			]
 		}
 	]
