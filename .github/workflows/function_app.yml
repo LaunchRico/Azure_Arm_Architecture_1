@@ -1,0 +1,27 @@
+name: CICD for function app
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up .NET Core
+              uses: actions/setup-dotnet@v4
+              with:
+                dotnet-version: 8.x
+
+            - name: Build and Publish
+              run: dotnet publish -c Release ${{ github.workspace }}/dev/function -o ${{ github.workspace }}/publish
+            
+            - name: Deployment to Azure Function
+              uses: Azure/functions-action@v4
+              with:
+                app-name: ${{ env.FUNCTION_APP_NAME }}
+                publish-profile: ${{ secrets.FUNCTION_PUBLISH_PROFILE }}
+                package: '${{ github.workspace }}/publish'
