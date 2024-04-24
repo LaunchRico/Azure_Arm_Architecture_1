@@ -16,34 +16,23 @@ namespace function
         [FunctionName("HttpFunction")]
         public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
+            //string name = req.Query["name"];
             var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
+            var insertCmdText = $"INSERT INTO dbo.test (Column1) VALUES (@value)";
 
-            /*
-            using (SqlConnection conn = new SqlConnection(connectionString)) {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
                 conn.Open();
-                var newTableName = "TestTable";
-
-                var createTableCmdText = $@"
-                    IF NOT EXISTS (
-                        SELECT * 
-                        FROM INFORMATION_SCHEMA.TABLES 
-                        WHERE TABLE_SCHEMA = 'dbo' 
-                        AND TABLE_NAME = '{newTableName}')
-                    BEGIN
-                        CREATE TABLE dbo.{newTableName} (
-                            ID INT IDENTITY(1,1) PRIMARY KEY,
-                            Column1 NVARCHAR(MAX)
-                        )
-                    END";
-
-                using (SqlCommand createTableCMD = new SqlCommand(createTableCmdText, conn))
+                /*
+                using (SqlCommand insertCmd = new SqlCommand(insertCmdText, conn))
                 {
-                    createTableCMD.ExecuteNonQuery();
+                    // Assuming 'message' holds the value to be inserted into the table
+                    insertCmd.Parameters.AddWithValue("@value", name);
+                    insertCmd.ExecuteNonQuery();
                 }
+                */
+                return new OkObjectResult("Connection Open");
             }
-            */
-
-            return new OkObjectResult(connectionString);
         }
     }
 }
