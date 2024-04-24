@@ -9,10 +9,8 @@ namespace function
     public class QueueTrigger
     {
         [FunctionName("QueueTrigger")]
-        public static void Run([QueueTrigger("queuemmrsboxwestus001", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
+        public static void Run([QueueTrigger("queuemmrsboxwestus001", Connection = "AzureWebJobsStorage")]string myQueueItem)
         {
-            log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
-
             var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
 
             using (SqlConnection conn = new SqlConnection(connectionString)) {

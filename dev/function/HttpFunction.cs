@@ -14,10 +14,11 @@ namespace function
     public static class HttpFunction
     {
         [FunctionName("HttpFunction")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
             var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
 
+            /*
             using (SqlConnection conn = new SqlConnection(connectionString)) {
                 conn.Open();
                 var newTableName = "TestTable";
@@ -40,7 +41,9 @@ namespace function
                     createTableCMD.ExecuteNonQuery();
                 }
             }
-            return new OkObjectResult("Table created");
+            */
+
+            return new OkObjectResult(connectionString);
         }
     }
 }
