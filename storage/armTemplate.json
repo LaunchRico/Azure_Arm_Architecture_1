@@ -97,17 +97,7 @@
 			"location": "[parameters('location')]",
 			"properties": {
 				"administratorLogin": "[parameters('adminUsername')]",
-				"administratorLoginPassword": "[parameters('administratorLoginPassword')]",
-				"networkAcls": {
-					"defaultAction": "Deny",
-					"virtualNetworkRules": [
-						{
-							"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('serverFarmSubnetName'))]",
-							"action": "Allow",
-							"state": "Succeeded"
-						}
-					]
-				}
+				"administratorLoginPassword": "[parameters('administratorLoginPassword')]"
 			},
 			"resources": [
 				{
@@ -124,6 +114,18 @@
 						"[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
 					]
 				}
+			]
+		},
+		{
+			"type": "Microsoft.Sql/servers/virtualNetworkRules",
+			"apiVersion": "2021-11-01",
+			"name": "[concat(parameters('sqlServerName'), '/', 'VirtualNetworkRule')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('serverFarmSubnetName'))]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Sql/servers/', parameters('sqlServerName'))]"
 			]
 		}
 	]
