@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "function": {
+    "LocalFunctionProj": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7134",
+      "commandLineArgs": "--port 7189",
       "launchBrowser": false
     }
   }
