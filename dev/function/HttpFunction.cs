@@ -16,7 +16,7 @@ namespace function
         [FunctionName("HttpFunction")]
         public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
-            var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
+            //var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
 
             /*
             using (SqlConnection conn = new SqlConnection(connectionString)) {
@@ -43,7 +43,7 @@ namespace function
             }
             */
 
-            return new OkObjectResult(connectionString);
+            return new OkObjectResult("This function is working");
         }
     }
 }
