@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Data.SqlClient;
 
 namespace function
 {
@@ -15,7 +16,31 @@ namespace function
         [FunctionName("HttpFunction")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
         {
-            return new OkObjectResult("This is ok");
+            var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
+
+            using (SqlConnection conn = new SqlConnection(connectionString)) {
+                conn.Open();
+                var newTableName = "TestTable";
+
+                var createTableCmdText = $@"
+                    IF NOT EXISTS (
+                        SELECT * 
+                        FROM INFORMATION_SCHEMA.TABLES 
+                        WHERE TABLE_SCHEMA = 'dbo' 
+                        AND TABLE_NAME = '{newTableName}')
+                    BEGIN
+                        CREATE TABLE dbo.{newTableName} (
+                            ID INT IDENTITY(1,1) PRIMARY KEY,
+                            Column1 NVARCHAR(MAX)
+                        )
+                    END";
+
+                using (SqlCommand createTableCMD = new SqlCommand(createTableCmdText, conn))
+                {
+                    createTableCMD.ExecuteNonQuery();
+                }
+            }
+            return new OkObjectResult("Table created");
         }
     }
 }
