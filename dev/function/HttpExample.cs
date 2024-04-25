@@ -19,9 +19,8 @@ namespace LocalFunctionProj
         [Function("HttpExample")]
         public async Task<string> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
-            //string name = req.Query["name"];
-            //var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
-            var connectionString = "Server=tcp:sql-mmr-sbox-westus-001.database.windows.net,1433;Initial Catalog=db-mmr-sbox-westus-001;Persist Security Info=False;User ID=mmradministrator;Password=alBjFg8nen;MultipleActiveResultSets=False;Encrypt=true;TrustServerCertificate=False;Connection Timeout=30;";
+            var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
+            //var connectionString = "Server=tcp:sql-mmr-sbox-westus-001.database.windows.net,1433;Initial Catalog=db-mmr-sbox-westus-001;Persist Security Info=False;User ID=mmradministrator;Password=alBjFg8nen;MultipleActiveResultSets=False;Encrypt=true;TrustServerCertificate=False;Connection Timeout=30;";
          
             try
             {
