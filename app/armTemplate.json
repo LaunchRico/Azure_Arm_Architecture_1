@@ -92,53 +92,52 @@
 			]
 		},
 		{
-			"type": "Microsoft.Web/sites",
-			"apiVersion": "2020-06-01",
-			"name": "[parameters('functionAppName')]",
-			"location": "[parameters('location')]",
-			"kind": "functionapp",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('functionAppName')]",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp,linux",
+            "location": "[parameters('location')]",
+            "tags": {},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
 			],
-			"properties": {
-				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]",
-				"siteConfig": {
-					"linuxFxVersion": "DOTNET-ISOLATED|8.0",
-					"appSettings": [
-						{
-							"name": "AzureWebJobsStorage",
-							"value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('functionStorageAccount'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccount')), '2019-06-01').keys[0].value)]"
-						},
-						{
+            "properties": {
+                "name": "[parameters('functionAppName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
                             "value": "~4"
                         },
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
+                            "value": "dotnet-isolated"
                         },
                         {
                             "name": "WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED",
                             "value": "1"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('functionStorageAccount'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccount')), '2019-06-01').keys[0].value)]"
                         }
-					]
-				}
-			},
-			"resources": [
-				{
-					"name": "virtualNetwork",
-					"type": "config",
-					"apiVersion": "2018-02-01",
-					"location": "[parameters('location')]",
-					"dependsOn": [
-						"[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
-					],
-					"properties": {
-						"subnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
-						"swiftSupported": true
-					}
-				}
-			]
-		}
+                    ],
+                    "cors": {
+                        "allowedOrigins": [
+                            "https://portal.azure.com"
+                        ]
+                    },
+                    "use32BitWorkerProcess": false,
+                    "linuxFxVersion": "DOTNET-ISOLATED|8.0",
+                    "alwaysOn": true
+                },
+                "clientAffinityEnabled": false,
+                "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+                "publicNetworkAccess": "Enabled",
+                "vnetRouteAllEnabled": true,
+                "httpsOnly": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan'))]"
+            }
+        }
 	]
 }
