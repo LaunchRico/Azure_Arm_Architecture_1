@@ -45,6 +45,8 @@ tempVariable=$(az sql db show-connection-string --server $sqlServerName --name $
 
 databaseConnectionString=${tempVariable/<username>/$adminUserName}
 databaseConnectionString=${databaseConnectionString/<password>/$adminLoginPassword}
+databaseConnectionString=${databaseConnectionString%\"}
+databaseConnectionString=${databaseConnectionString#\"}
 
 #Assigning connection string to azure function
 az functionapp config appsettings set --name $functionAppName --resource-group $resourceGroup --settings "SqlConnection=$databaseConnectionString"

@@ -19,36 +19,29 @@ namespace LocalFunctionProj
         [Function("HttpExample")]
         public async Task<string> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
-            var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
-            //var connectionString = "Server=tcp:sql-mmr-sbox-westus-001.database.windows.net,1433;Initial Catalog=db-mmr-sbox-westus-001;Persist Security Info=False;User ID=mmradministrator;Password=alBjFg8nen;MultipleActiveResultSets=False;Encrypt=true;TrustServerCertificate=False;Connection Timeout=30;";
-         
+           var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    await connection.OpenAsync(); // Use async opening
-                    using (SqlCommand command = new SqlCommand("SELECT 1", connection))
+                    await connection.OpenAsync();
+                    string insertQuery = "INSERT INTO test (Name) VALUES (@Name)";
+                    using (SqlCommand command = new SqlCommand(insertQuery, connection))
                     {
-                        var result = await command.ExecuteScalarAsync();
-                        if (result != null)
-                        {
-                            return "Connection working and SQL command executed successfully.";
-                        }
-                        else
-                        {
-                            return "Connection working but SQL command did not return any results.";
-                        }
+                        command.Parameters.AddWithValue("@Name", req.Query["value"]);
+                        var result = await command.ExecuteNonQueryAsync();
                     }
+                    return "Ok";
                 }
             }
             catch (SqlException ex)
             {
-                return $"SQL Exception: {ex.Message}";
+                return ex.Message;
             }
             catch (Exception ex)
             {
-                return $"General Exception: {ex.Message}";
-            }
+                return ex.Message;
+            }  
         }
     }
 }
