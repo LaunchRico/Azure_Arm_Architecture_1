@@ -18,7 +18,7 @@ namespace function
         [Function(nameof(QueueTrigger))]
         public async Task Run([QueueTrigger("queuemmrsboxwestus001", Connection = "AzureWebJobsStorage")] QueueMessage message)
         {
-           var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
+            var connectionString = Environment.GetEnvironmentVariable("SqlConnection");
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -29,7 +29,7 @@ namespace function
                     using (SqlCommand command = new SqlCommand(insertQuery, connection))
                     {
                         // Use parameterization to safely include the message content
-                        command.Parameters.AddWithValue("@Name", message.MessageText);
+                        command.Parameters.AddWithValue("@Name", message.Body.ToString());
 
                         var result = await command.ExecuteNonQueryAsync(); // Execute the insert command
                     }
