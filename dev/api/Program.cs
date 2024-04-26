@@ -9,15 +9,19 @@ var configuration = builder.Configuration;
 
 var app = builder.Build();
 
-app.MapGet("/", (IConfiguration config) => {
+app.MapGet("/", (IConfiguration config, string? value) => {
 	string queueName = "queuemmrsboxwestus001";
 	string? storageConnectionString = config["AzureWebJobsStorage"];
 	if (storageConnectionString == null) 
 	{
 		return "No connection string";
 	}
-	QueueClient queueClient = new QueueClient(storageConnectionString, queueName);
-	queueClient.SendMessageAsync("First message");
+	QueueClient queueClient = new QueueClient(storageConnectionString, queueName, new QueueClientOptions
+	{
+		MessageEncoding = QueueMessageEncoding.Base64
+	});
+	string storeValue = value ?? "Default";
+	queueClient.SendMessageAsync(storeValue).Wait();
 	return "Message created";
 });
 
